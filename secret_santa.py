@@ -46,10 +46,11 @@ Subject: {subject}
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'config.yml')
 
 class Person:
-    def __init__(self, name, email, partner):
+    def __init__(self, name, email, partner, gave_to_last_year):
         self.name = name
         self.email = email
         self.partner = partner
+        self.gave_to_last_year = gave_to_last_year
     
     def __str__(self):
         return "%s <%s>" % (self.name, self.email)
@@ -67,7 +68,7 @@ def parse_yaml(yaml_path=CONFIG_PATH):
 
 def choose_reciever(giver, recievers):
     choice = random.choice(recievers)
-    if giver.partner == choice.name or giver.name == choice.name:
+    if giver.partner == choice.name or giver.name == choice.name or giver.gave_to_last_year == choice.name:
         if len(recievers) is 1:
             raise Exception('Only one reciever left, try again')
         return choose_reciever(giver, recievers)
@@ -120,6 +121,7 @@ def main(argv=None):
         couples = config['COUPLES']
         if len(participants) < 2:
             raise Exception('Not enough participants specified.')
+        last_year_match = config['LAST_YEAR']
         
         givers = []
         for person in participants:
@@ -133,7 +135,12 @@ def main(argv=None):
                     for member in names:
                         if name != member:
                             partner = member
-            person = Person(name, email, partner)
+            for last_year in last_year_match:
+                names = [n.strip() for n in last_year.split(',')]
+                if name == names[0]:
+                    gave_to_last_year = names[1]
+                    continue
+            person = Person(name, email, partner, gave_to_last_year)
             givers.append(person)
         
         recievers = givers[:]

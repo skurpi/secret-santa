@@ -4,7 +4,8 @@ Intro
 **secret-santa** can help you manage a list of secret santa participants by
 randomly assigning pairings and sending emails. It can avoid pairing 
 couples to their significant other, and allows custom email messages to be 
-specified.
+specified. If this is not your first year then it will also make sure that
+people don't get the same people two years in a row.
 
 Dependencies
 ------------
@@ -21,6 +22,10 @@ the email message if you wish.
 
     cd secret-santa/
     cp config.yml.template config.yml
+
+A tip in order to remember last years santas is that this script sends emails from
+a gmail account, meaning that the list can be extracted from that accounts
+'Sent' folder.
 
 Here is the example configuration unchanged:
 
@@ -44,6 +49,10 @@ Here is the example configuration unchanged:
     COUPLES:
       - Chad, Jen
       - Bill, Sharon
+
+    # Who had who last year. Chad bought a gift to Sharon
+    LAST_YEAR:
+      - Chad, Sharon
 
     # From address should be the organizer in case participants have any questions
     FROM: You <you@gmail.net>

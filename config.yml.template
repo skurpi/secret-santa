@@ -19,6 +19,10 @@ COUPLES:
   - Chad, Jen
   - Bill, Sharon
 
+# Who had who last year. Chad bought a gift to Sharon
+LAST_YEAR:
+  - Chad, Sharon
+
 # From address should be the organizer in case participants have any questions
 FROM: You <you@gmail.net>
 
