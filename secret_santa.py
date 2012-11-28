@@ -13,7 +13,7 @@ import os
 
 help_message = '''
 To use, fill out config.yml with your own participants. You can also specify
-couples so that people don't get assigned their significant other.
+DONT-PAIR so that people don't get assigned their significant other.
 
 You'll also need to specify your mail server settings. An example is provided
 for routing mail through gmail.
@@ -28,7 +28,7 @@ REQRD = (
     'PASSWORD',
     'TIMEZONE',
     'PARTICIPANTS',
-    'COUPLES',
+    'DONT-PAIR',
     'FROM',
     'SUBJECT',
     'MESSAGE',
@@ -46,10 +46,10 @@ Subject: {subject}
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'config.yml')
 
 class Person:
-    def __init__(self, name, email, partner, gave_to_last_year):
+    def __init__(self, name, email, invalid_matches, gave_to_last_year):
         self.name = name
         self.email = email
-        self.partner = partner
+        self.invalid_matches = invalid_matches
         self.gave_to_last_year = gave_to_last_year
 
     def __str__(self):
@@ -68,7 +68,7 @@ def parse_yaml(yaml_path=CONFIG_PATH):
 
 def choose_receiver(giver, receivers):
     choice = random.choice(receivers)
-    if giver.partner == choice.name or giver.name == choice.name or giver.gave_to_last_year == choice.name:
+    if choice.name in giver.invalid_matches or giver.name == choice.name or giver.gave_to_last_year == choice.name:
         if len(receivers) is 1:
             raise Exception('Only one receiver left, try again')
         return choose_receiver(giver, receivers)
@@ -118,7 +118,7 @@ def main(argv=None):
                     'Required parameter %s not in yaml config file!' % (key,))
 
         participants = config['PARTICIPANTS']
-        couples = config['COUPLES']
+        dont_pair = config['DONT-PAIR']
         if len(participants) < 2:
             raise Exception('Not enough participants specified.')
         last_year_match = config['LAST_YEAR']
@@ -127,20 +127,20 @@ def main(argv=None):
         for person in participants:
             name, email = re.match(r'([^<]*)<([^>]*)>', person).groups()
             name = name.strip()
-            partner = None
-            for couple in couples:
-                names = [n.strip() for n in couple.split(',')]
+            invalid_matches = []
+            for pair in dont_pair:
+                names = [n.strip() for n in pair.split(',')]
                 if name in names:
-                    # is part of this couple
+                    # is part of this pair
                     for member in names:
                         if name != member:
-                            partner = member
+                            invalid_matches.append(member)
             for last_year in last_year_match:
                 names = [n.strip() for n in last_year.split(',')]
                 if name == names[0]:
                     gave_to_last_year = names[1]
                     continue
-            person = Person(name, email, partner, gave_to_last_year)
+            person = Person(name, email, invalid_matches, gave_to_last_year)
             givers.append(person)
 
         receivers = givers[:]
@@ -185,7 +185,7 @@ call with the --send argument:
 
         if send:
             server.quit()
-        
+
     except Usage, err:
         print >> sys.stderr, sys.argv[0].split("/")[-1] + ": " + str(err.msg)
         print >> sys.stderr, "\t for help use --help"
