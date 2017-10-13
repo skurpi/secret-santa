@@ -15,8 +15,8 @@ help_message = '''
 To use, fill out config.yml with your own participants. You can also specify
 DONT-PAIR so that people don't get assigned their significant other.
 
-You'll also need to specify your mail server settings. An example is provided
-for routing mail through gmail.
+To send an email, you'll also need to specify your mail server settings.
+An example is provided for routing mail through gmail.
 
 For more information, see README.
 '''
@@ -99,15 +99,18 @@ def main(argv=None):
         argv = sys.argv
     try:
         try:
-            opts, args = getopt.getopt(argv[1:], "shc", ["send", "help"])
+            opts, args = getopt.getopt(argv[1:], "shc", ["send", "txt", "help"])
         except getopt.error, msg:
             raise Usage(msg)
 
         # option processing
         send = False
+        text = False
         for option, value in opts:
             if option in ("-s", "--send"):
                 send = True
+            if option in ("-t", "--txt"):
+                txt = True
             if option in ("-h", "--help"):
                 raise Usage(help_message)
 
@@ -125,7 +128,16 @@ def main(argv=None):
 
         givers = []
         for person in participants:
-            name, email = re.match(r'([^<]*)<([^>]*)>', person).groups()
+            # only try to find email addresses when --send option is active (to allow lists without them)
+            if send:
+                try:
+                    name, email = re.match(r'([^<]*)<([^>]*)>', person).groups()
+                except:
+                    raise Exception('E-Mail address cannot be read for all users. Check formatting.')
+            else:
+                name = re.match(r'([^<]*)', person).groups()[0]
+                email = []
+
             name = name.strip()
             invalid_matches = []
             for pair in dont_pair:
@@ -145,7 +157,23 @@ def main(argv=None):
 
         receivers = givers[:]
         pairs = create_pairs(givers, receivers)
-        if not send:
+        if txt:
+            folder = "pairs"
+            if not os.path.exists(folder):
+                os.mkdir(folder)
+            for the_file in os.listdir(folder):
+                # Clear directory
+                file_path = os.path.join(folder, the_file)
+                try:
+                    if os.path.isfile(file_path):
+                        os.unlink(file_path)
+                except Exception, e:
+                    print e
+            for pair in pairs:
+                f = open("pairs/Santee of " + pair.giver.name + '.txt','w')
+                f.write(config['MESSAGE'].format(santa=pair.giver.name, santee=pair.receiver.name))
+                f.close()
+        if not (send or txt):
             print """
 Test pairings:
 
@@ -155,6 +183,11 @@ To send out emails with new pairings,
 call with the --send argument:
 
     $ python secret_santa.py --send
+
+To generate txt files to distribute manually,
+call with the --txt argument:
+
+    $ python secret_santa.py --txt
 
             """ % ("\n".join([str(p) for p in pairs]))
 

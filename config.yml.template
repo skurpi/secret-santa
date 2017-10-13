@@ -3,7 +3,7 @@
 SMTP_SERVER: smtp.gmail.com
 SMTP_PORT: 587
 USERNAME: you@gmail.com
-PASSWORD: "you're-password"
+PASSWORD: "your-password"
 
 TIMEZONE: 'US/Pacific'
 
@@ -27,8 +27,9 @@ LAST_YEAR:
 # From address should be the organizer in case participants have any questions
 FROM: You <you@gmail.net>
 
-# Both SUBJECT and MESSAGE can include variable substitution for the 
+# Both SUBJECT and MESSAGE can include variable substitution for the
 # "santa" and "santee"
+# When using the --txt option, the text file for each santa will contain MESSAGE.
 SUBJECT: Your secret santa recipient is {santee}
 MESSAGE: |
   Dear {santa},
