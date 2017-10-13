@@ -28,7 +28,6 @@ REQRD = (
     'PASSWORD',
     'TIMEZONE',
     'PARTICIPANTS',
-    'DONT-PAIR',
     'FROM',
     'SUBJECT',
     'MESSAGE',
@@ -121,7 +120,10 @@ def main(argv=None):
                     'Required parameter %s not in yaml config file!' % (key,))
 
         participants = config['PARTICIPANTS']
-        dont_pair = config['DONT-PAIR']
+        try:
+            dont_pair = config['DONT-PAIR']
+        except KeyError, TypeError:
+            dont_pair = []
         if len(participants) < 2:
             raise Exception('Not enough participants specified.')
         last_year_match = config['LAST_YEAR']
