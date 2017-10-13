@@ -217,7 +217,7 @@ call with the --txt argument:
                 santee=pair.receiver.name,
             )
             if send:
-                result = server.sendmail(frm, [to], body)
+                result = server.sendmail(frm, [to], body.encode('utf-8'))
                 print "Emailed %s <%s>" % (pair.giver.name, to)
 
         if send:
