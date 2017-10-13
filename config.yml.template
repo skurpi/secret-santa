@@ -5,6 +5,11 @@ SMTP_PORT: 587
 USERNAME: you@gmail.com
 PASSWORD: "your-password"
 
+# Change from null to a number to generate the same set of pairs each time
+# the script is run this can be useful in case someone loses their email
+# and you can send the pairs out again with the sanme set of pairs.
+RANDOMSEED: null
+
 TIMEZONE: 'US/Pacific'
 
 PARTICIPANTS:

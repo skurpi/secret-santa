@@ -114,6 +114,8 @@ def main(argv=None):
                 raise Usage(help_message)
 
         config = parse_yaml()
+        if config['RANDOMSEED']:
+            random.seed(config['RANDOMSEED'])
         for key in REQRD:
             if key not in config.keys():
                 raise Exception(
