@@ -29,7 +29,7 @@ FROM: You <you@gmail.net>
 # Both SUBJECT and MESSAGE can include variable substitution for the 
 # "santa" and "santee"
 SUBJECT: Your secret santa recipient is {santee}
-MESSAGE: 
+MESSAGE: |
   Dear {santa},
   
   This year you are {santee}'s Secret Santa!. Ho Ho Ho!
