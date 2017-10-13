@@ -1,5 +1,5 @@
+#!/usr/bin/env python
 import yaml
-# sudo pip install pyyaml
 import re
 import random
 import smtplib
@@ -45,11 +45,11 @@ Subject: {subject}
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), 'config.yml')
 
 class Person:
-    def __init__(self, name, email, invalid_matches, gave_to_last_year):
+    def __init__(self, name, email, invalid_matches, gave_last_year_to):
         self.name = name
         self.email = email
         self.invalid_matches = invalid_matches
-        self.gave_to_last_year = gave_to_last_year
+        self.gave_last_year_to = gave_last_year_to
 
     def __str__(self):
         return "%s <%s>" % (self.name, self.email)
@@ -67,7 +67,7 @@ def parse_yaml(yaml_path=CONFIG_PATH):
 
 def choose_receiver(giver, receivers):
     choice = random.choice(receivers)
-    if choice.name in giver.invalid_matches or giver.name == choice.name or giver.gave_to_last_year == choice.name:
+    if choice.name in giver.invalid_matches or choice.name == giver.name or giver.gave_last_year_to == choice.name:
         if len(receivers) is 1:
             raise Exception('Only one receiver left, try again')
         return choose_receiver(giver, receivers)
@@ -104,7 +104,7 @@ def main(argv=None):
 
         # option processing
         send = False
-        text = False
+        txt = False
         for option, value in opts:
             if option in ("-s", "--send"):
                 send = True
@@ -128,7 +128,10 @@ def main(argv=None):
             dont_pair = []
         if len(participants) < 2:
             raise Exception('Not enough participants specified.')
-        last_year_match = config['LAST_YEAR']
+        try:
+            last_year_match = config['LAST_YEAR']
+        except KeyError, TypeError:
+            last_year_match = []
 
         givers = []
         for person in participants:
@@ -144,6 +147,7 @@ def main(argv=None):
 
             name = name.strip()
             invalid_matches = []
+            gave_last_year_to = None
             for pair in dont_pair:
                 names = [n.strip() for n in pair.split(',')]
                 if name in names:
@@ -154,9 +158,9 @@ def main(argv=None):
             for last_year in last_year_match:
                 names = [n.strip() for n in last_year.split(',')]
                 if name == names[0]:
-                    gave_to_last_year = names[1]
+                    gave_last_year_to = names[1]
                     continue
-            person = Person(name, email, invalid_matches, gave_to_last_year)
+            person = Person(name, email, invalid_matches, gave_last_year_to)
             givers.append(person)
 
         receivers = givers[:]

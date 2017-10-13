@@ -75,7 +75,8 @@ Here is the example configuration unchanged:
 
 Once configured, call secret-santa:
 
-    python secret_santa.py
+    docker build -t santa .
+    docker run santa
 
 Calling secret-santa without arguments will output a test pairing of
 participants.
@@ -92,9 +93,9 @@ participants.
 
             $ python secret_santa.py --send
 
-To send the emails, call using the `--send` argument
+To send the emails, run using the `--send` argument
 
-    python secret_santa.py --send
+    docker run santa --send
 
 To create a folder with text files, call using the `--txt` argument
 
