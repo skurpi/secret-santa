@@ -38,15 +38,13 @@ FROM: You <you@gmail.net>
 SUBJECT: Your secret santa recipient is {santee}
 MESSAGE: |
   Dear {santa},
-  
+
   This year you are {santee}'s Secret Santa!. Ho Ho Ho!
-  
+
   The maximum spending limit is 50.00
-  
-  
-  This message was automagically generated from a computer. 
-  
+
+
+  This message was automagically generated from a computer.
+
   Nothing could possibly go wrong...
-  
-  http://github.com/underbluewaters/secret-santa
-  
+
