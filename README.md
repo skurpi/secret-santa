@@ -97,6 +97,6 @@ To send the emails, run using the `--send` argument
 
     docker run santa --send
 
-To create a folder with text files, call using the `--txt` argument
+To create the output in text, run using the `--txt` argument and save it in a file
 
-    python secret_santa.py --txt
+    docker run santa --txt > results.txt

@@ -166,21 +166,9 @@ def main(argv=None):
         receivers = givers[:]
         pairs = create_pairs(givers, receivers)
         if txt:
-            folder = "pairs"
-            if not os.path.exists(folder):
-                os.mkdir(folder)
-            for the_file in os.listdir(folder):
-                # Clear directory
-                file_path = os.path.join(folder, the_file)
-                try:
-                    if os.path.isfile(file_path):
-                        os.unlink(file_path)
-                except Exception, e:
-                    print e
             for pair in pairs:
-                f = open("pairs/Santee of " + pair.giver.name + '.txt','w')
-                f.write(config['MESSAGE'].format(santa=pair.giver.name, santee=pair.receiver.name))
-                f.close()
+                print(config['MESSAGE'].format(santa=pair.giver.name, santee=pair.receiver.name))
+                print('-------')
         if not (send or txt):
             print """
 Test pairings:
