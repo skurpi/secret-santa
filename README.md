@@ -27,6 +27,8 @@ A tip in order to remember last years santas is that this script sends emails fr
 a gmail account, meaning that the list can be extracted from that accounts
 'Sent' folder.
 
+For gmail, you will need an App Password: https://support.google.com/accounts/answer/185833
+
 Here is the example configuration unchanged:
 
     # Required to connect to your outgoing mail server. Example for using gmail:
