@@ -1,5 +1,4 @@
-Intro
-=====
+# Intro
 
 **secret-santa** can help you manage a list of secret santa participants by
 randomly assigning pairings and sending emails. It can avoid pairing 
@@ -7,14 +6,10 @@ couples to their significant other, and allows custom email messages to be
 specified. If this is not your first year then it will also make sure that
 people don't get the same people two years in a row.
 
-Dependencies
-------------
+## Getting started
+Simplest way to get started is to have docker installed and run it through a (Dev Container)[https://code.visualstudio.com/docs/devcontainers/containers]
 
-pytz
-pyyaml
-
-Usage
------
+### Usage
 
 Copy config.yml.template to config.yml and enter in the connection details 
 for your outgoing mail server. Modify the participants and couples lists and 

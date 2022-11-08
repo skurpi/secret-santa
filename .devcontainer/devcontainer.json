@@ -1,0 +1,6 @@
+// For format details, see https://aka.ms/devcontainer.json.
+{
+	"name": "Python 2",
+	"image": "pypy:2.7-buster",
+	"postCreateCommand": "pip install -r requirements.txt"
+}
