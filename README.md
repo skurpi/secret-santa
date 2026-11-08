@@ -1,71 +1,43 @@
 # secret-santa
 
-Randomly assigns secret santas and emails each person who they're buying for.
+Draws secret santas and emails everyone who they're buying for.
 
-- Every valid draw is equally likely (the old Python version wasn't fair, see below).
-- Couples (or whole households) never draw each other.
-- No repeats: each `--send` saves the draw to `history/<year>.yml` (gitignored),
-  and later draws avoid the pairs from the last `AVOID_YEARS` years (default 2).
-- Any number of people, odd or even. Comment someone out to skip them a year.
+- Couples never get each other.
+- Nobody gets someone they've had in the last few years.
+- The organiser can take part too: you never see who got whom.
 
-The only thing you need installed is Docker.
+All you need is Docker.
+
+## First time
+
+    cp config.yml.template config.yml
+
+Fill in `config.yml`; each setting is explained in the file. For Gmail you
+need an [App Password](https://myaccount.google.com/apppasswords).
 
 ## Every year
 
-1. Edit `config.yml`: who's in, who's a couple, the message.
-   First time? `cp config.yml.template config.yml`.
-   For gmail you need an [App Password](https://myaccount.google.com/apppasswords).
+Update `config.yml` (who's in, the message), then try it out. This shows a
+sample draw and sends nothing:
 
-2. Dry run: shows a sample draw and an example email. Sends nothing.
+    docker compose run --rm --build santa
 
-       docker compose run --rm --build santa
+When it looks right, send for real:
 
-3. Send. Makes a fresh draw, emails everyone, saves the draw to `history/`.
+    docker compose run --rm --build santa --send
 
-       docker compose run --rm --build santa --send
+That's it. Each draw is saved in `history/`, so next year's draw can avoid
+repeats. Don't open those files unless you want spoilers.
 
-`--send` only prints who was emailed, not who they got, so the organiser can take
-part too. `history/<year>.yml` holds the answers, so don't open it unless you
-want spoilers.
+If sending stops partway, it tells you who already got an email. Run it again
+and tell those people to ignore the first one.
 
-If sending fails partway, it tells you who was already emailed. Run `--send`
-again for a fresh draw and tell those people to ignore their first email.
+## Extras
 
-### Trying the email side without bothering the family
-
-Put a config in its own folder (history gets saved next to the config) with a
-few participants using your own address, e.g. `you+ann@gmail.com`:
-
-    docker compose run --rm --build santa --config smoke/config.yml --send
-
-## Development
-
-Tests run in Docker too:
+Run the tests:
 
     docker compose run --rm test
 
-The image build runs `go vet` and the tests, so a broken build can't send
-emails. There's also a dev container for VS Code (`.devcontainer/`).
-
-## Why the rewrite
-
-The original Python 2 script gave each person their recipient in config
-order, picking from whoever was left and starting over on a dead end. That
-never broke a rule, but it wasn't fair: whoever is near the end of the list
-tends to get the leftovers, and because the list order stays the same each
-year, the same pairs kept coming up. On the 2026 family list one pairing came
-up 26% of the time when a fair draw gives about 13%.
-
-The new draw shuffles everyone and keeps the shuffle only if it breaks no rule,
-so every valid draw is equally likely. `TestFamilyDrawIsFair` checks that
-against exact counts.
-
-## Getting old draws back out of Gmail
-
-`tools/fetch_emails.py` downloads every sent draw email (subject containing
-"Hanukkah person is") into `emails/` (gitignored, spoilers). It logs in with
-the App Password from `config.yml` and only reads; nothing is marked or moved.
+Download old draw emails from Gmail into `emails/` (read-only, spoilers):
 
     docker run --rm -v "${PWD}:/work" -w /work python:3.13-alpine python tools/fetch_emails.py
-
-Pass a different Gmail search as an argument if the subject ever changes.
