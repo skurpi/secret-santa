@@ -25,7 +25,8 @@ func ComposeEmail(cfg *Config, pair Pair, now time.Time) []byte {
 
 	var b strings.Builder
 	fmt.Fprintf(&b, "Date: %s\r\n", now.In(cfg.Location).Format(time.RFC1123Z))
-	fmt.Fprintf(&b, "Message-Id: <%s@secret-santa>\r\n", rand.Text())
+	_, domain, _ := strings.Cut(cfg.From.Address, "@")
+	fmt.Fprintf(&b, "Message-Id: <%s@%s>\r\n", rand.Text(), domain)
 	fmt.Fprintf(&b, "From: %s\r\n", cfg.From.String())
 	fmt.Fprintf(&b, "To: %s\r\n", to.String())
 	fmt.Fprintf(&b, "Subject: %s\r\n", mime.QEncoding.Encode("utf-8", fill(cfg.Subject)))

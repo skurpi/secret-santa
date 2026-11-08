@@ -93,3 +93,16 @@ func TestEmailFillsInYear(t *testing.T) {
 		t.Errorf("body = %q", body)
 	}
 }
+
+// Spam filters penalise Message-Ids whose right-hand side isn't a real domain.
+func TestMessageIdUsesTheSendersDomain(t *testing.T) {
+	msg := compose(t, testConfig(t), Pair{Person{"Ann", "ann@example.com"}, Person{"Cat", "cat@example.com"}})
+	id := msg.Header.Get("Message-Id")
+	if !strings.HasPrefix(id, "<") || !strings.HasSuffix(id, "@example.com>") { // FROM is me@example.com
+		t.Fatalf("Message-Id = %q, want <...@example.com>", id)
+	}
+	other := compose(t, testConfig(t), Pair{Person{"Ann", "ann@example.com"}, Person{"Cat", "cat@example.com"}})
+	if other.Header.Get("Message-Id") == id {
+		t.Fatal("Message-Ids must be unique per email")
+	}
+}
