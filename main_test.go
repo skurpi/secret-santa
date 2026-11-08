@@ -315,3 +315,21 @@ func TestAvoidYearsCantBeNegative(t *testing.T) {
 		t.Fatalf("error = %v", err)
 	}
 }
+
+// The whole draw happens before anything is saved or sent, so a draw that
+// can't be completed never emails anyone.
+func TestFailedDrawSendsNothingAndSavesNothing(t *testing.T) {
+	h := newHarness(withAvoidYears("3"))
+	// Ann can't have Bob (partner) or Cat (LAST_YEAR); history rules out the rest.
+	h.files["history/2025.yml"] = "PAIRS:\n  - Ann, Dan\n"
+	h.files["history/2024.yml"] = "PAIRS:\n  - Ann, Eve\n"
+	if code := h.app.Run([]string{"--send"}); code == 0 {
+		t.Fatal("expected the draw to fail")
+	}
+	if h.dialed || len(h.mailer.sent) > 0 {
+		t.Fatal("connected to the mail server even though the draw failed")
+	}
+	if _, ok := h.files["history/2026.yml"]; ok {
+		t.Fatal("saved a draw that was never completed")
+	}
+}
