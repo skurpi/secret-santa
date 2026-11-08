@@ -1,45 +1,51 @@
-# Required to connect to your outgoing mail server. Example for using gmail:
-# gmail
+# Copy to config.yml (which git ignores) and fill in.
+
+# Outgoing mail server. Example for gmail, which needs an App Password:
+# https://myaccount.google.com/apppasswords
 SMTP_SERVER: smtp.gmail.com
 SMTP_PORT: 587
 USERNAME: you@gmail.com
-PASSWORD: "you're-password"
+PASSWORD: "your-app-password"
 
-TIMEZONE: 'US/Pacific'
+# Used for the Date on the emails. Optional, defaults to UTC.
+TIMEZONE: 'Australia/Melbourne'
 
+# Who's in the draw. Any number of people (2 or more), odd numbers are fine.
+# Comment someone out with # to leave them out this year.
 PARTICIPANTS:
   - Chad <chad@somewhere.net>
   - Jen <jen@gmail.net>
   - Bill <Bill@somedomain.net>
   - Sharon <Sharon@hi.org>
+  # - Pat <pat@example.com>
 
-
-# Couples will never be paired with each other
+# People on the same line never draw each other. Usually couples, but a line
+# can have more names (e.g. a household). Names must match PARTICIPANTS exactly;
+# it's fine to mention someone who's sitting this year out.
 COUPLES:
   - Chad, Jen
   - Bill, Sharon
 
-# Who had who last year. Chad bought a gift to Sharon
+# Every --send saves the draw in history/<year>.yml. Later draws avoid the
+# pairs from this many previous years. Optional, default 2; 0 ignores history.
+# If the draw says it's impossible (lots of couples, small group), lower it.
+AVOID_YEARS: 2
+
+# Optional: extra Giver, Receiver pairs to avoid, e.g. from years drawn before
+# history/ existed. Applies on top of AVOID_YEARS.
 LAST_YEAR:
   - Chad, Sharon
 
-# From address should be the organizer in case participants have any questions
-FROM: You <you@gmail.net>
+# The organiser, in case anyone has questions.
+FROM: You <you@gmail.com>
 
-# Both SUBJECT and MESSAGE can include variable substitution for the 
-# "santa" and "santee"
+# SUBJECT and MESSAGE can use {santa} (who's buying) and {santee} (for whom).
 SUBJECT: Your secret santa recipient is {santee}
-MESSAGE: 
+MESSAGE: |
   Dear {santa},
-  
-  This year you are {santee}'s Secret Santa!. Ho Ho Ho!
-  
-  The maximum spending limit is 50.00
-  
-  
-  This message was automagically generated from a computer. 
-  
-  Nothing could possibly go wrong...
-  
-  http://github.com/underbluewaters/secret-santa
-  
+
+  This year you are {santee}'s Secret Santa! Ho Ho Ho!
+
+  The spending limit is 50.
+
+  Merry Christmas!

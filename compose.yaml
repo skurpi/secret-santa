@@ -1,0 +1,25 @@
+# Everything runs in Docker; nothing to install on the host.
+#
+#   docker compose run --rm --build santa            # dry run: sample draw, no email
+#   docker compose run --rm --build santa --send     # the real thing
+#   docker compose run --rm test                     # unit tests
+services:
+  santa:
+    build: .
+    # Run as you rather than root, so history/ files on Linux hosts are yours.
+    user: "${UID:-1000}:${GID:-1000}"
+    volumes:
+      - .:/data             # reads ./config.yml, writes ./history/
+
+  test:
+    image: golang:1.27-alpine
+    working_dir: /src
+    volumes:
+      - .:/src
+      - gomod:/go/pkg/mod
+      - gocache:/root/.cache/go-build
+    command: go test ./...
+
+volumes:
+  gomod:
+  gocache:

@@ -1,6 +1,12 @@
 // For format details, see https://aka.ms/devcontainer.json.
+// Not needed to run the draw (see README); this is for working on the code.
 {
-	"name": "Python 2",
-	"image": "pypy:2.7-buster",
-	"postCreateCommand": "pip install -r requirements.txt"
+	"name": "secret-santa (Go)",
+	"image": "golang:1.27",
+	"customizations": {
+		"vscode": {
+			"extensions": ["golang.go"]
+		}
+	},
+	"postCreateCommand": "go mod download"
 }

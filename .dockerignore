@@ -1,0 +1,7 @@
+# Never bake the password or the draw history into an image.
+config.yml
+**/config.yml
+history/
+**/history/
+.git
+.devcontainer

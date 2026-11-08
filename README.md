@@ -1,95 +1,61 @@
-# Intro
+# secret-santa
 
-**secret-santa** can help you manage a list of secret santa participants by
-randomly assigning pairings and sending emails. It can avoid pairing 
-couples to their significant other, and allows custom email messages to be 
-specified. If this is not your first year then it will also make sure that
-people don't get the same people two years in a row.
+Randomly assigns secret santas and emails each person who they're buying for.
 
-## Getting started
-Simplest way to get started is to have docker installed and run it through a (Dev Container)[https://code.visualstudio.com/docs/devcontainers/containers]
+- Every valid draw is equally likely (the old Python version wasn't fair, see below).
+- Couples (or whole households) never draw each other.
+- No repeats: each `--send` saves the draw to `history/<year>.yml` (gitignored),
+  and later draws avoid the pairs from the last `AVOID_YEARS` years (default 2).
+- Any number of people, odd or even. Comment someone out to skip them a year.
 
-### Usage
+The only thing you need installed is Docker.
 
-Copy config.yml.template to config.yml and enter in the connection details 
-for your outgoing mail server. Modify the participants and couples lists and 
-the email message if you wish.
+## Every year
 
-    cd secret-santa/
-    cp config.yml.template config.yml
+1. Edit `config.yml`: who's in, who's a couple, the message.
+   First time? `cp config.yml.template config.yml`.
+   For gmail you need an [App Password](https://myaccount.google.com/apppasswords).
 
-A tip in order to remember last years santas is that this script sends emails from
-a gmail account, meaning that the list can be extracted from that accounts
-'Sent' folder.
+2. Dry run: shows a sample draw and an example email. Sends nothing.
 
-For gmail, you will need an App Password: https://support.google.com/accounts/answer/185833
+       docker compose run --rm --build santa
 
-Here is the example configuration unchanged:
+3. Send. Makes a fresh draw, emails everyone, saves the draw to `history/`.
 
-    # Required to connect to your outgoing mail server. Example for using gmail:
-    # gmail
-    SMTP_SERVER: smtp.gmail.com
-    SMTP_PORT: 587
-    USERNAME: you@gmail.com
-    PASSWORD: "you're-password"
+       docker compose run --rm --build santa --send
 
-    TIMEZONE: 'US/Pacific'
+`--send` only prints who was emailed, not who they got, so the organiser can take
+part too. `history/<year>.yml` holds the answers, so don't open it unless you
+want spoilers.
 
-    PARTICIPANTS:
-      - Chad <chad@somewhere.net>
-      - Jen <jen@gmail.net>
-      - Bill <Bill@somedomain.net>
-      - Sharon <Sharon@hi.org>
+If sending fails partway, it tells you who was already emailed. Run `--send`
+again for a fresh draw and tell those people to ignore their first email.
 
+### Trying the email side without bothering the family
 
-    # Couples will never be paired with each other
-    COUPLES:
-      - Chad, Jen
-      - Bill, Sharon
+Put a config in its own folder (history gets saved next to the config) with a
+few participants using your own address, e.g. `you+ann@gmail.com`:
 
-    # Who had who last year. Chad bought a gift to Sharon
-    LAST_YEAR:
-      - Chad, Sharon
+    docker compose run --rm --build santa --config smoke/config.yml --send
 
-    # From address should be the organizer in case participants have any questions
-    FROM: You <you@gmail.net>
+## Development
 
-    # Both SUBJECT and MESSAGE can include variable substitution for the 
-    # "santa" and "santee"
-    SUBJECT: Your secret santa recipient is {santee}
-    MESSAGE: 
-      Dear {santa},
+Tests run in Docker too:
 
-      This year you are {santee}'s Secret Santa!. Ho Ho Ho!
+    docker compose run --rm test
 
-      The maximum spending limit is 50.00
+The image build runs `go vet` and the tests, so a broken build can't send
+emails. There's also a dev container for VS Code (`.devcontainer/`).
 
+## Why the rewrite
 
-      This message was automagically generated from a computer. 
+The original Python 2 script gave each person their recipient in config
+order, picking from whoever was left and starting over on a dead end. That
+never broke a rule, but it wasn't fair: whoever is near the end of the list
+tends to get the leftovers, and because the list order stays the same each
+year, the same pairs kept coming up. On the 2026 family list one pairing came
+up 26% of the time when a fair draw gives about 13%.
 
-      Nothing could possibly go wrong...
-
-      http://github.com/underbluewaters/secret-santa
-
-Once configured, call secret-santa:
-
-    python secret_santa.py
-
-Calling secret-santa without arguments will output a test pairing of 
-participants.
-
-        Test pairings:
-
-        Chad ---> Bill
-        Jen ---> Sharon
-        Bill ---> Chad
-        Sharon ---> Jen
-
-        To send out emails with new pairings,
-        call with the --send argument:
-
-            $ python secret_santa.py --send
-
-To send the emails, call using the `--send` argument
-
-    python secret_santa.py --send
+The new draw shuffles everyone and keeps the shuffle only if it breaks no rule,
+so every valid draw is equally likely. `TestFamilyDrawIsFair` checks that
+against exact counts.
