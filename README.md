@@ -6,9 +6,12 @@ Draws secret santas and emails everyone who they're buying for.
 - Nobody gets someone they've had in the last few years.
 - The organiser can take part too: you never see who got whom.
 
-All you need is Docker.
-
 ## First time
+
+Install [Docker](https://docs.docker.com/get-docker/) (Docker Desktop on
+Windows or Mac). That's the only thing you need; everything else runs inside it.
+
+Then create your config:
 
     cp config.yml.template config.yml
 
