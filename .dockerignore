@@ -5,3 +5,6 @@ history/
 **/history/
 .git
 .devcontainer
+emails/
+**/emails/
+tools/

@@ -1,0 +1,4 @@
+# Go tooling expects LF; keep it that way on Windows checkouts too.
+*.go text eol=lf
+go.mod text eol=lf
+go.sum text eol=lf

@@ -59,3 +59,13 @@ up 26% of the time when a fair draw gives about 13%.
 The new draw shuffles everyone and keeps the shuffle only if it breaks no rule,
 so every valid draw is equally likely. `TestFamilyDrawIsFair` checks that
 against exact counts.
+
+## Getting old draws back out of Gmail
+
+`tools/fetch_emails.py` downloads every sent draw email (subject containing
+"Hanukkah person is") into `emails/` (gitignored, spoilers). It logs in with
+the App Password from `config.yml` and only reads; nothing is marked or moved.
+
+    docker run --rm -v "${PWD}:/work" -w /work python:3.13-alpine python tools/fetch_emails.py
+
+Pass a different Gmail search as an argument if the subject ever changes.

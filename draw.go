@@ -63,7 +63,9 @@ func Draw(people []Person, allowed func(giver, receiver string) bool, rng *rand.
 	return nil, ErrNoValidDraw
 }
 
-var ErrNoValidDraw = errors.New("couldn't find a valid draw: the rules leave someone with nobody to give to")
+// Returned after maxAttempts shuffles. Usually the rules are impossible, but
+// rules so tight that only a few hundred draws exist can also end up here.
+var ErrNoValidDraw = errors.New("couldn't find a valid draw in a million tries: the rules are too tight")
 
 func valid(givers, receivers []Person, allowed func(string, string) bool) bool {
 	for i := range givers {
