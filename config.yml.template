@@ -31,16 +31,18 @@ COUPLES:
 # If the draw says it's impossible (lots of couples, small group), lower it.
 AVOID_YEARS: 2
 
-# Optional: extra Giver, Receiver pairs to avoid, e.g. from years drawn before
-# history/ existed. Applies on top of AVOID_YEARS.
-LAST_YEAR:
-  - Chad, Sharon
+# Draws from before you used this version? Add them as history/<year>.yml:
+#   PAIRS:
+#     - Chad, Sharon
+# (LAST_YEAR from older configs still works, but applies forever, so prefer history/.)
 
 # The organiser, in case anyone has questions.
 FROM: You <you@gmail.com>
 
-# SUBJECT and MESSAGE can use {santa} (who's buying) and {santee} (for whom).
-SUBJECT: Your secret santa recipient is {santee}
+# SUBJECT and MESSAGE can use {santa} (who's buying), {santee} (who they're
+# buying for) and {year}. Keep {santee} out of the subject: it shows up in
+# inbox previews and phone notifications.
+SUBJECT: Your {year} secret santa person is...
 MESSAGE: |
   Dear {santa},
 

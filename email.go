@@ -14,9 +14,13 @@ import (
 )
 
 // ComposeEmail builds the message telling pair.Giver who they're buying for.
-// SUBJECT and MESSAGE may use {santa} and {santee}.
+// SUBJECT and MESSAGE may use {santa}, {santee} and {year} (in TIMEZONE).
 func ComposeEmail(cfg *Config, pair Pair, now time.Time) []byte {
-	fill := strings.NewReplacer("{santa}", pair.Giver.Name, "{santee}", pair.Receiver.Name).Replace
+	fill := strings.NewReplacer(
+		"{santa}", pair.Giver.Name,
+		"{santee}", pair.Receiver.Name,
+		"{year}", strconv.Itoa(now.In(cfg.Location).Year()),
+	).Replace
 	to := mail.Address{Name: pair.Giver.Name, Address: pair.Giver.Email}
 
 	var b strings.Builder

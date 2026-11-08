@@ -72,3 +72,24 @@ func TestEmailHandlesNonEnglishNames(t *testing.T) {
 		t.Errorf("to = %v (%v)", to, err)
 	}
 }
+
+func TestEmailFillsInYear(t *testing.T) {
+	cfg := testConfig(t)
+	cfg.Subject = "Your {year} person is..."
+	cfg.Message = "Happy {year}, {santa}!"
+	// 31 Dec 2026 14:00 UTC is already 1 Jan 2027 in Melbourne: the year
+	// follows TIMEZONE, like the Date header does.
+	cfg.Location, _ = time.LoadLocation("Australia/Melbourne")
+	raw := ComposeEmail(cfg, Pair{Person{"Ann", "ann@example.com"}, Person{"Cat", "cat@example.com"}},
+		time.Date(2026, 12, 31, 14, 0, 0, 0, time.UTC))
+	msg, err := mail.ReadMessage(strings.NewReader(string(raw)))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := msg.Header.Get("Subject"); got != "Your 2027 person is..." {
+		t.Errorf("subject = %q", got)
+	}
+	if body, _ := io.ReadAll(msg.Body); string(body) != "Happy 2027, Ann!\n" {
+		t.Errorf("body = %q", body)
+	}
+}
